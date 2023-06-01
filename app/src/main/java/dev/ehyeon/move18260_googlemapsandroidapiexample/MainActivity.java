@@ -24,6 +24,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
+        PermissionUtil permissionUtil = new PermissionUtil(this);
+
+        // 권한 거부 처리 생략
+        if (!permissionUtil.hasPermissions()) {
+            permissionUtil.getPermissions();
+        }
+
         mapFragment.getMapAsync(this);
     }
 
