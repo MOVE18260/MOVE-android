@@ -1,10 +1,14 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,9 +41,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         TextView tvLatitude = findViewById(R.id.latitude);
         TextView tvLongitude = findViewById(R.id.longitude);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         permissionUtil = new PermissionUtil(this);
 
@@ -71,7 +75,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onPause() {
         super.onPause();
 
-        locationService.stopListening();
+        if (locationService != null) {
+            locationService.stopListening();
+        }
     }
 
     @Override
@@ -82,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             locationService.startListening();
         } else {
             permissionUtil.requestPermissions();
-            // TODO permission 핸들링 필요
         }
     }
 
@@ -91,6 +96,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onDestroy();
 
         handler.removeCallbacks(runnable);
+    }
+
+    // TODO 추후 권한 핸들링으로 추가
+    private void showPermissionRequestDeniedDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("권한 요청")
+                .setMessage("앱을 사용하기 위해 권한이 필요합니다. 권한을 허용해주세요.")
+                .setPositiveButton("권한 설정", (dialog, which) -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.fromParts("package", getPackageName(), null));
+                    startActivity(intent);
+                })
+                .setNegativeButton("종료", (dialog, which) -> finish())
+                .setCancelable(false)
+                .show();
     }
 
     @SuppressLint("MissingPermission")
