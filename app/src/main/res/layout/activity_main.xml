@@ -23,6 +23,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="경도 = 127.7669" />
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="주소 = " />
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView

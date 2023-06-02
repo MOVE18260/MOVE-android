@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         TextView tvLatitude = findViewById(R.id.latitude);
         TextView tvLongitude = findViewById(R.id.longitude);
+        TextView tvAddress = findViewById(R.id.address);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         permissionUtil = new PermissionUtil(this);
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             permissionUtil.requestPermissions();
         }
 
-        locationService = new LocationService((LocationManager) getSystemService(LOCATION_SERVICE));
+        locationService = new LocationService((LocationManager) getSystemService(LOCATION_SERVICE), getBaseContext());
 
         locationService.startListening();
 
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void run() {
                 tvLatitude.setText("위도 = " + locationService.getLatitude());
                 tvLongitude.setText("경도 = " + locationService.getLongitude());
+                tvAddress.setText("주소 = " + locationService.getAddress());
                 handler.postDelayed(this, MIN_TIME_INTERVAL);
             }
         };
