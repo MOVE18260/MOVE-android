@@ -23,9 +23,11 @@ import com.google.android.gms.maps.model.LatLng;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, OnMyLocationButtonClickListener, OnMyLocationClickListener {
 
     private static final String TAG = "MainActivity";
+    private static final long MIN_TIME_INTERVAL = 1000; // 1초마다 TextView 업데이트
 
-    private LocationManager locationManager;
-    private LocationListenerImpl locationListener;
+    private PermissionUtil permissionUtil;
+
+    private LocationService locationService;
 
     private Handler handler;
     private Runnable runnable;
@@ -39,30 +41,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         TextView tvLatitude = findViewById(R.id.latitude);
         TextView tvLongitude = findViewById(R.id.longitude);
 
-        PermissionUtil permissionUtil = new PermissionUtil(this);
+        permissionUtil = new PermissionUtil(this);
 
         // 권한 거부 처리 생략
         if (!permissionUtil.hasPermissions()) {
-            permissionUtil.getPermissions();
+            permissionUtil.requestPermissions();
         }
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListenerImpl();
+        locationService = new LocationService((LocationManager) getSystemService(LOCATION_SERVICE));
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
+        locationService.startListening();
 
         handler = new Handler();
         runnable = new Runnable() {
             @Override
             public void run() {
-                tvLatitude.setText("위도 = " + locationListener.getLatitude());
-                tvLongitude.setText("경도 = " + locationListener.getLongitude());
-                handler.postDelayed(this, 1000);
+                tvLatitude.setText("위도 = " + locationService.getLatitude());
+                tvLongitude.setText("경도 = " + locationService.getLongitude());
+                handler.postDelayed(this, MIN_TIME_INTERVAL);
             }
         };
 
-        handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnable, MIN_TIME_INTERVAL);
 
         mapFragment.getMapAsync(this);
     }
@@ -71,17 +71,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onPause() {
         super.onPause();
 
-        if (locationManager != null) {
-            locationManager.removeUpdates(locationListener);
-        }
+        locationService.stopListening();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
+        if (permissionUtil.hasPermissions()) {
+            locationService.startListening();
+        } else {
+            permissionUtil.requestPermissions();
+            // TODO permission 핸들링 필요
+        }
     }
 
     @Override
@@ -98,27 +100,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
 
-        // 0, 0 방지
-        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (lastKnownLocation == null) {
-            lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
+        Location lastKnownLocation = locationService.getLastKnownLocation();
 
-        double latitude;
-        double longitude;
-        if (lastKnownLocation != null) {
-            latitude = lastKnownLocation.getLatitude();
-            longitude = lastKnownLocation.getLongitude();
-        } else {
-            // 대한민국
-            latitude = 35.9078;
-            longitude = 127.7669;
-        }
-
-        Log.d(TAG, "latitude = " + latitude + " longitude = " + longitude);
+        Log.d(TAG, "latitude = " + lastKnownLocation.getLatitude() + " longitude = " + lastKnownLocation.getLongitude());
 
         // zoom = 15 == 반경 1.5km
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), 15));
     }
 
     // 내 위치 버튼 클릭
