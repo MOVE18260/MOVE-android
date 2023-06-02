@@ -28,7 +28,7 @@ public class PermissionUtil {
         return true;
     }
 
-    public void getPermissions() {
+    public void requestPermissions() {
         ActivityCompat.requestPermissions(activity, PERMISSIONS, REQUEST_CODE);
     }
 }
