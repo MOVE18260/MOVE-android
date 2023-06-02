@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,21 +20,24 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
-        OnMyLocationButtonClickListener, OnMyLocationClickListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, OnMyLocationButtonClickListener, OnMyLocationClickListener {
 
     private static final String TAG = "MainActivity";
 
     private LocationManager locationManager;
     private LocationListenerImpl locationListener;
 
+    private Handler handler;
+    private Runnable runnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        TextView tvLatitude = findViewById(R.id.latitude);
+        TextView tvLongitude = findViewById(R.id.longitude);
 
         PermissionUtil permissionUtil = new PermissionUtil(this);
 
@@ -46,6 +51,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
+
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                tvLatitude.setText("위도 = " + locationListener.getLatitude());
+                tvLongitude.setText("경도 = " + locationListener.getLongitude());
+                handler.postDelayed(this, 1000);
+            }
+        };
+
+        handler.postDelayed(runnable, 1000);
 
         mapFragment.getMapAsync(this);
     }
@@ -65,6 +82,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        handler.removeCallbacks(runnable);
     }
 
     @SuppressLint("MissingPermission")
