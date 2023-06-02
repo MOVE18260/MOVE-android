@@ -2,7 +2,9 @@ package dev.ehyeon.move18260_googlemapsandroidapiexample;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +21,11 @@ import com.google.android.gms.maps.model.LatLng;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
         OnMyLocationButtonClickListener, OnMyLocationClickListener {
 
+    private static final String TAG = "MainActivity";
+
+    private LocationManager locationManager;
+    private LocationListenerImpl locationListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +41,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             permissionUtil.getPermissions();
         }
 
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new LocationListenerImpl();
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
+
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (locationManager != null) {
+            locationManager.removeUpdates(locationListener);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
     }
 
     @SuppressLint("MissingPermission")
@@ -44,7 +74,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.56, 126.97), 10));
+        // 0, 0 방지
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnownLocation == null) {
+            lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+
+        double latitude;
+        double longitude;
+        if (lastKnownLocation != null) {
+            latitude = lastKnownLocation.getLatitude();
+            longitude = lastKnownLocation.getLongitude();
+        } else {
+            // 대한민국
+            latitude = 35.9078;
+            longitude = 127.7669;
+        }
+
+        Log.d(TAG, "latitude = " + latitude + " longitude = " + longitude);
+
+        // zoom = 15 == 반경 1.5km
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15));
     }
 
     // 내 위치 버튼 클릭
@@ -57,6 +107,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // 파란색 점 클릭
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-        Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "latitude = " + location.getLatitude() + " longitude = " + location.getLongitude(), Toast.LENGTH_SHORT).show();
     }
 }
