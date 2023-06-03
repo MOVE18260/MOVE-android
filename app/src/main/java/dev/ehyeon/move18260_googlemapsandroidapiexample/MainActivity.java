@@ -1,7 +1,9 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
                 (LocationManager) getSystemService(LOCATION_SERVICE), getBaseContext());
 
         locationService.startListening();
+
+        PedometerService pedometerService = PedometerService.setPedometerService((SensorManager) getSystemService(Context.SENSOR_SERVICE));
 
         HomeFragment homeFragment = new HomeFragment();
         MapFragment mapFragment = new MapFragment();
