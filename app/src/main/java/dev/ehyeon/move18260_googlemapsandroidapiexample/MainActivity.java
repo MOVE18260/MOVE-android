@@ -23,6 +23,11 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.navigation.NavigationBarView;
+
+import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.HomeFragment;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, OnMyLocationButtonClickListener, OnMyLocationClickListener {
 
@@ -71,6 +76,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         handler.postDelayed(runnable, MIN_TIME_INTERVAL);
 
         mapFragment.getMapAsync(this);
+
+        HomeFragment homeFragment = new HomeFragment();
+        MapFragment mapFragment1 = new MapFragment(); // TODO 이름 중복 해결
+        ProfileFragment profileFragment = new ProfileFragment();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.containers, homeFragment).commit();
+
+        NavigationBarView navigationBarView = findViewById(R.id.main_bottomNavigationView);
+
+        navigationBarView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.menu_home) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.containers, homeFragment).commit();
+                return true;
+            } else if (item.getItemId() == R.id.menu_map) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.containers, mapFragment1).commit();
+                return true;
+            } else if (item.getItemId() == R.id.menu_profile) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.containers, profileFragment).commit();
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
