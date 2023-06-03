@@ -18,13 +18,29 @@ public class LocationService {
     private static final long MIN_TIME_INTERVAL = 1000;
     private static final float MIN_DISTANCE_CHANGE = 0;
 
-    private final LocationManager locationManager;
-    private final LocationListenerImpl locationListener = new LocationListenerImpl();
-    private final Geocoder geocoder;
+    private static LocationService locationService = null;
 
-    public LocationService(LocationManager locationManager, Context context) {
+    private LocationManager locationManager;
+    private final LocationListenerImpl locationListener = new LocationListenerImpl();
+    private Geocoder geocoder;
+
+    private LocationService() {
+    }
+
+    private LocationService(LocationManager locationManager, Context context) {
         this.locationManager = locationManager;
         this.geocoder = new Geocoder(context, Locale.KOREA);
+    }
+
+    public static LocationService getLocationService() {
+        return locationService;
+    }
+
+    public static LocationService setLocationService(LocationManager locationManager, Context context) {
+        if (locationService == null) {
+            locationService = new LocationService(locationManager, context);
+        }
+        return locationService;
     }
 
     @SuppressLint("MissingPermission") // permission 필요

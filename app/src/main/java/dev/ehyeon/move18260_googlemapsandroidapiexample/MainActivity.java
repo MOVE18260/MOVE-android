@@ -1,50 +1,30 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
-import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.navigation.NavigationBarView;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, OnMyLocationButtonClickListener, OnMyLocationClickListener {
+import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.HomeFragment;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
 
-    private static final String TAG = "MainActivity";
-    private static final long MIN_TIME_INTERVAL = 1000; // 1초마다 TextView 업데이트
+public class MainActivity extends AppCompatActivity {
 
     private PermissionUtil permissionUtil;
 
     private LocationService locationService;
 
-    private Handler handler;
-    private Runnable runnable;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        TextView tvLatitude = findViewById(R.id.latitude);
-        TextView tvLongitude = findViewById(R.id.longitude);
-        TextView tvAddress = findViewById(R.id.address);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         permissionUtil = new PermissionUtil(this);
 
@@ -53,24 +33,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             permissionUtil.requestPermissions();
         }
 
-        locationService = new LocationService((LocationManager) getSystemService(LOCATION_SERVICE), getBaseContext());
+        locationService = LocationService.setLocationService(
+                (LocationManager) getSystemService(LOCATION_SERVICE), getBaseContext());
 
         locationService.startListening();
 
-        handler = new Handler();
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                tvLatitude.setText("위도 = " + locationService.getLatitude());
-                tvLongitude.setText("경도 = " + locationService.getLongitude());
-                tvAddress.setText("주소 = " + locationService.getAddress());
-                handler.postDelayed(this, MIN_TIME_INTERVAL);
+        HomeFragment homeFragment = new HomeFragment();
+        MapFragment mapFragment = new MapFragment();
+        ProfileFragment profileFragment = new ProfileFragment();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.containers, homeFragment).commit();
+
+        NavigationBarView navigationBarView = findViewById(R.id.main_bottomNavigationView);
+
+        navigationBarView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.menu_home) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.containers, homeFragment).commit();
+                return true;
+            } else if (item.getItemId() == R.id.menu_map) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.containers, mapFragment).commit();
+                return true;
+            } else if (item.getItemId() == R.id.menu_profile) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.containers, profileFragment).commit();
+                return true;
             }
-        };
-
-        handler.postDelayed(runnable, MIN_TIME_INTERVAL);
-
-        mapFragment.getMapAsync(this);
+            return false;
+        });
     }
 
     @Override
@@ -93,13 +81,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        handler.removeCallbacks(runnable);
-    }
-
     // TODO 추후 권한 핸들링으로 추가
     private void showPermissionRequestDeniedDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -114,33 +95,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setNegativeButton("종료", (dialog, which) -> finish())
                 .setCancelable(false)
                 .show();
-    }
-
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        googleMap.setMyLocationEnabled(true);
-        googleMap.setOnMyLocationButtonClickListener(this);
-        googleMap.setOnMyLocationClickListener(this);
-
-        Location lastKnownLocation = locationService.getLastKnownLocation();
-
-        Log.d(TAG, "latitude = " + lastKnownLocation.getLatitude() + " longitude = " + lastKnownLocation.getLongitude());
-
-        // zoom = 15 == 반경 1.5km
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), 15));
-    }
-
-    // 내 위치 버튼 클릭
-    @Override
-    public boolean onMyLocationButtonClick() {
-        Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
-        return false;
-    }
-
-    // 파란색 점 클릭
-    @Override
-    public void onMyLocationClick(@NonNull Location location) {
-        Toast.makeText(this, "latitude = " + location.getLatitude() + " longitude = " + location.getLongitude(), Toast.LENGTH_SHORT).show();
     }
 }
