@@ -16,7 +16,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.HomeFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
-import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.PedometerService;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         locationService.startListening();
 
-        PedometerService pedometerService = PedometerService.setPedometerService((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+        StepSensor stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
 
         HomeFragment homeFragment = new HomeFragment();
         MapFragment mapFragment = new MapFragment();

@@ -5,14 +5,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.Log;
 
-public class SensorEventListenerImpl implements SensorEventListener {
+public class StepSensorEventListenerImpl implements SensorEventListener {
 
     private static final String TAG = "SensorEventListenerImpl";
 
     private final Sensor sensor;
     private int step;
 
-    public SensorEventListenerImpl(Sensor sensor) {
+    public StepSensorEventListenerImpl(Sensor sensor) {
         if (sensor == null || sensor.getType() != Sensor.TYPE_STEP_COUNTER) {
             throw new UnsupportedOperationException();
         }

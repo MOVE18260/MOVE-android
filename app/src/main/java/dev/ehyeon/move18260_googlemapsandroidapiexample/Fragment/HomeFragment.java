@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.PedometerService;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.R;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
 
 public class HomeFragment extends Fragment {
 
@@ -21,7 +21,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        PedometerService pedometerService = PedometerService.getPedometerService();
+        StepSensor stepSensor = StepSensor.getStepSensor();
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -32,7 +32,7 @@ public class HomeFragment extends Fragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                tvStep.setText("걸음 수 = " + pedometerService.getStep());
+                tvStep.setText("걸음 수 = " + stepSensor.getStep());
                 handler.postDelayed(this, MIN_TIME_INTERVAL);
             }
         };
