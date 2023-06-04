@@ -5,12 +5,15 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 public class StepSensorEventListenerImpl implements SensorEventListener {
 
     private static final String TAG = "SensorEventListenerImpl";
 
     private final Sensor sensor;
-    private int step;
+    private final MutableLiveData<Integer> step = new MutableLiveData<>(0);
 
     public StepSensorEventListenerImpl(Sensor sensor) {
         if (sensor == null || sensor.getType() != Sensor.TYPE_STEP_COUNTER) {
@@ -22,8 +25,8 @@ public class StepSensorEventListenerImpl implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        step = (int) event.values[0];
-        Log.d(TAG, "step = " + step);
+        step.setValue((int) event.values[0]);
+        Log.d(TAG, "step = " + step.getValue());
     }
 
     @Override
@@ -34,7 +37,7 @@ public class StepSensorEventListenerImpl implements SensorEventListener {
         return sensor;
     }
 
-    public int getStep() {
+    public LiveData<Integer> getStep() {
         return step;
     }
 }

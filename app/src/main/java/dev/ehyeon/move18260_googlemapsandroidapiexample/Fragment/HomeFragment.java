@@ -1,43 +1,37 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import dev.ehyeon.move18260_googlemapsandroidapiexample.R;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.presentation.viewmodel.StepViewModel;
 
 public class HomeFragment extends Fragment {
 
-    private static final long MIN_TIME_INTERVAL = 1000; // 1초마다 TextView 업데이트
-
-    // TODO 최악의 방법, 리팩토링 필요
-    private Handler handler;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        StepSensor stepSensor = StepSensor.getStepSensor();
-
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         TextView tvStep = view.findViewById(R.id.step);
 
-        handler = new Handler();
-
-        Runnable runnable = new Runnable() {
+        StepViewModel stepViewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+            @NonNull
             @Override
-            public void run() {
-                tvStep.setText("걸음 수 = " + stepSensor.getStep());
-                handler.postDelayed(this, MIN_TIME_INTERVAL);
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                return (T) new StepViewModel(StepSensor.getStepSensor());
             }
-        };
+        }).get(StepViewModel.class);
 
-        handler.postDelayed(runnable, MIN_TIME_INTERVAL);
+        stepViewModel.getStep().observe(getViewLifecycleOwner(), step -> tvStep.setText("걸음 수 = " + step));
 
         return view;
     }

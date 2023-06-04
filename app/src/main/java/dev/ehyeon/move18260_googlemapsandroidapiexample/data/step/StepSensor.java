@@ -3,14 +3,13 @@ package dev.ehyeon.move18260_googlemapsandroidapiexample.data.step;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
+import androidx.lifecycle.LiveData;
+
 public class StepSensor {
 
     private static StepSensor stepSensor = null;
 
-    private StepSensorEventListenerImpl sensorEventListener;
-
-    private StepSensor() {
-    }
+    private final StepSensorEventListenerImpl sensorEventListener;
 
     private StepSensor(SensorManager sensorManager) {
         sensorEventListener = new StepSensorEventListenerImpl(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER));
@@ -30,7 +29,7 @@ public class StepSensor {
         return stepSensor;
     }
 
-    public int getStep() {
+    public LiveData<Integer> getStep() {
         return sensorEventListener.getStep();
     }
 }
