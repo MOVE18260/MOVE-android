@@ -2,9 +2,9 @@
 
 ## Memo
 
-1. LocationService 를 step sensor 처럼 변경
-2. 나중에 데이터 바인딩 적용
-3. step sensor 와 viewModel 사이 작업을 처리하는 클래스 생성
+1. step sensor 와 viewModel 사이 작업을 처리하는 클래스 생성
+2. 홈 화면에 날씨 관련 추가
+3. 데이터 바인딩 적용
 
 ## Reference
 
