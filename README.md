@@ -2,12 +2,9 @@
 
 ## Memo
 
-1. PedometerService 클래스와 SensorEventListener 구현체 분리 필요
-2. LocationService 클래스와 PedometerService 클래스의 데이터 전달 방식 문제
-
-    - 시간에 따라 값을 변경하는 것보다 더 개선된 방법이 필요
-
-3. 향후 늘어날 기능들을 위해 패키기 구조 개선 필요
+1. step sensor 와 viewModel 사이 작업을 처리하는 클래스 생성
+2. 홈 화면에 날씨 관련 추가
+3. 데이터 바인딩 적용
 
 ## Reference
 

@@ -16,12 +16,14 @@ import com.google.android.material.navigation.NavigationBarView;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.HomeFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSensor;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
 
 public class MainActivity extends AppCompatActivity {
 
     private PermissionUtil permissionUtil;
 
-    private LocationService locationService;
+    private LocationSensor locationSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +37,11 @@ public class MainActivity extends AppCompatActivity {
             permissionUtil.requestPermissions();
         }
 
-        locationService = LocationService.setLocationService(
-                (LocationManager) getSystemService(LOCATION_SERVICE), getBaseContext());
+        locationSensor = LocationSensor.setLocationSensor((LocationManager) getSystemService(LOCATION_SERVICE));
 
-        locationService.startListening();
+        locationSensor.startListening();
 
-        PedometerService pedometerService = PedometerService.setPedometerService((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+        StepSensor stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
 
         HomeFragment homeFragment = new HomeFragment();
         MapFragment mapFragment = new MapFragment();
@@ -69,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if (locationService != null) {
-            locationService.stopListening();
+        if (locationSensor != null) {
+            locationSensor.stopListening();
         }
     }
 
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         if (permissionUtil.hasPermissions()) {
-            locationService.startListening();
+            locationSensor.startListening();
         } else {
             permissionUtil.requestPermissions();
         }
