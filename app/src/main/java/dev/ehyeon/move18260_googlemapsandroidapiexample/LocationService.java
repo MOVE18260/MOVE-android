@@ -28,6 +28,10 @@ public class LocationService {
     }
 
     private LocationService(LocationManager locationManager, Context context) {
+        if (locationManager == null) {
+            throw new NullPointerException();
+        }
+
         this.locationManager = locationManager;
         this.geocoder = new Geocoder(context, Locale.KOREA);
     }
