@@ -16,6 +16,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.HomeFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.PedometerService;
 
 public class MainActivity extends AppCompatActivity {
 

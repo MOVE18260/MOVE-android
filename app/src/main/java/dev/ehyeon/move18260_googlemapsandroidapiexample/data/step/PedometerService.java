@@ -1,4 +1,4 @@
-package dev.ehyeon.move18260_googlemapsandroidapiexample;
+package dev.ehyeon.move18260_googlemapsandroidapiexample.data.step;
 
 import android.hardware.Sensor;
 import android.hardware.SensorManager;

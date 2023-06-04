@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import dev.ehyeon.move18260_googlemapsandroidapiexample.PedometerService;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.PedometerService;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.R;
 
 public class HomeFragment extends Fragment {
