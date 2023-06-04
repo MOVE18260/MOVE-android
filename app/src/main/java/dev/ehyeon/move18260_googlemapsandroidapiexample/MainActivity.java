@@ -18,6 +18,7 @@ import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSensor;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRepository;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         locationSensor.startListening();
 
         StepSensor stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+
+        StepRepository stepRepository = StepRepository.setStepRepository(stepSensor);
 
         HomeFragment homeFragment = new HomeFragment();
         MapFragment mapFragment = new MapFragment();
