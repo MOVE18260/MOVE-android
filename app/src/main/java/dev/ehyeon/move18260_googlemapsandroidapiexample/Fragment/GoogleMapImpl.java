@@ -10,12 +10,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
-import dev.ehyeon.move18260_googlemapsandroidapiexample.LocationService;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSensor;
 
 public class GoogleMapImpl implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
 
-    private final LocationService locationService = LocationService.getLocationService();
+    private final LocationSensor locationSensor = LocationSensor.getLocationSensor();
 
     @SuppressLint("MissingPermission")
     @Override
@@ -24,7 +24,7 @@ public class GoogleMapImpl implements OnMapReadyCallback,
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
 
-        Location lastKnownLocation = locationService.getLastKnownLocation();
+        Location lastKnownLocation = locationSensor.getLastKnownLocation();
 
         // zoom = 15 == 반경 1.5km
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(

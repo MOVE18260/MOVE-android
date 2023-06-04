@@ -11,27 +11,26 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
-import dev.ehyeon.move18260_googlemapsandroidapiexample.LocationService;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.R;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSensor;
 
 public class MapFragment extends Fragment {
 
     private static final long MIN_TIME_INTERVAL = 1000; // 1초마다 TextView 업데이트
 
-    private LocationService locationService;
+    private LocationSensor locationSensor;
 
     private Handler handler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        locationService = LocationService.getLocationService();
+        locationSensor = LocationSensor.getLocationSensor();
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
         // DEBUG 용도
         TextView tvLatitude = view.findViewById(R.id.latitude);
         TextView tvLongitude = view.findViewById(R.id.longitude);
-        TextView tvAddress = view.findViewById(R.id.address);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         handler = new Handler();
@@ -39,9 +38,8 @@ public class MapFragment extends Fragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                tvLatitude.setText("위도 = " + locationService.getLatitude());
-                tvLongitude.setText("경도 = " + locationService.getLongitude());
-                tvAddress.setText("주소 = " + locationService.getAddress());
+                tvLatitude.setText("위도 = " + locationSensor.getLatitude().getValue());
+                tvLongitude.setText("경도 = " + locationSensor.getLongitude().getValue());
                 handler.postDelayed(this, MIN_TIME_INTERVAL);
             }
         };
