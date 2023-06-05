@@ -16,7 +16,7 @@ public class StepSensorEventListenerImpl implements SensorEventListener {
     private final MutableLiveData<Integer> step = new MutableLiveData<>(0);
 
     public StepSensorEventListenerImpl(Sensor sensor) {
-        if (sensor == null || sensor.getType() != Sensor.TYPE_STEP_COUNTER) {
+        if (sensor == null || sensor.getType() != Sensor.TYPE_STEP_DETECTOR) {
             throw new UnsupportedOperationException();
         }
 
@@ -25,7 +25,7 @@ public class StepSensorEventListenerImpl implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        step.setValue((int) event.values[0]);
+        step.setValue(step.getValue() + 1);
         Log.d(TAG, "step = " + step.getValue());
     }
 
@@ -35,6 +35,14 @@ public class StepSensorEventListenerImpl implements SensorEventListener {
 
     public Sensor getSensor() {
         return sensor;
+    }
+
+    public void initStep(int i) {
+        step.setValue(i);
+    }
+
+    public void resetStep() {
+        step.setValue(0);
     }
 
     public LiveData<Integer> getStep() {

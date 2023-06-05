@@ -12,7 +12,7 @@ public class StepSensor {
     private final StepSensorEventListenerImpl sensorEventListener;
 
     private StepSensor(SensorManager sensorManager) {
-        sensorEventListener = new StepSensorEventListenerImpl(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER));
+        sensorEventListener = new StepSensorEventListenerImpl(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR));
 
         sensorManager.registerListener(sensorEventListener, sensorEventListener.getSensor(), SensorManager.SENSOR_DELAY_FASTEST);
     }
@@ -27,6 +27,14 @@ public class StepSensor {
         }
 
         return stepSensor;
+    }
+
+    public void initStep(int step) {
+        sensorEventListener.initStep(step);
+    }
+
+    public void resetStep() {
+        sensorEventListener.resetStep();
     }
 
     public LiveData<Integer> getStep() {

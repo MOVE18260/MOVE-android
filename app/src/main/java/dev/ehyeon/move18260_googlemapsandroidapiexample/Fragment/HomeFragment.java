@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import dev.ehyeon.move18260_googlemapsandroidapiexample.R;
-import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRepository;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.presentation.viewmodel.StepViewModel;
 
 public class HomeFragment extends Fragment {
@@ -27,7 +27,7 @@ public class HomeFragment extends Fragment {
             @NonNull
             @Override
             public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) new StepViewModel(StepSensor.getStepSensor());
+                return (T) new StepViewModel(StepRepository.getStepRepository());
             }
         }).get(StepViewModel.class);
 
