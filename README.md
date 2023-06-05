@@ -2,7 +2,8 @@
 
 ## Memo
 
-1. step sensor 와 viewModel 사이 작업을 처리하는 클래스 생성
+1. 하루 마다 step 이 갱신되는 기능
+2. GPS tracking 구현
 2. 홈 화면에 날씨 관련 추가
 3. 데이터 바인딩 적용
 
@@ -17,3 +18,6 @@
     - [Android - TYPE_STEP_COUNTER, TYPE_STEP_DETECTOR](https://ddunnimlabs.tistory.com/145)
 - 기타
     - [린트 검사로 코드 개선](https://developer.android.com/studio/write/lint?hl=ko)
+- DataStore
+  - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore?hl=ko#java)
+    - ! 코틀린 내부적으로 internal 사용해 자바에서 사용하지 못하고 있다.
