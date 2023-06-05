@@ -18,6 +18,7 @@ import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSensor;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
+import dev.ehyeon.move18260_googlemapsandroidapiexample.data.time.Time;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRepository;
 
 public class MainActivity extends AppCompatActivity {
@@ -101,8 +102,13 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO INFO dependency injection 라이브러리 필요성 느낌
     private void init() {
+        initTime();
         initStep();
         initLocation();
+    }
+
+    private void initTime() {
+        Time.getTime();
     }
 
     private void initStep() {
