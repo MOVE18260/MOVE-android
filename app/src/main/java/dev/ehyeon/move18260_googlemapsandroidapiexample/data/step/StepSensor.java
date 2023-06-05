@@ -29,8 +29,12 @@ public class StepSensor {
         return stepSensor;
     }
 
-    public void initStep() {
-        sensorEventListener.initStep();
+    public void initStep(int step) {
+        sensorEventListener.initStep(step);
+    }
+
+    public void resetStep() {
+        sensorEventListener.resetStep();
     }
 
     public LiveData<Integer> getStep() {

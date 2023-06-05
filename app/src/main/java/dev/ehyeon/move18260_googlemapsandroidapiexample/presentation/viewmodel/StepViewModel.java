@@ -13,10 +13,6 @@ public class StepViewModel extends ViewModel {
         this.stepRepository = stepRepository;
     }
 
-    public void initStep() {
-        stepRepository.initStep();
-    }
-
     public LiveData<Integer> getStep() {
         return stepRepository.getStep();
     }

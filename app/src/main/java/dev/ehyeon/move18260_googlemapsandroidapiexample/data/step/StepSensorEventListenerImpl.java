@@ -37,7 +37,11 @@ public class StepSensorEventListenerImpl implements SensorEventListener {
         return sensor;
     }
 
-    public void initStep() {
+    public void initStep(int i) {
+        step.setValue(i);
+    }
+
+    public void resetStep() {
         step.setValue(0);
     }
 

@@ -15,8 +15,9 @@ public class StepRepository {
 
     private final StepSensor stepSensor;
 
-    private StepRepository(StepSensor stepSensor) {
+    private StepRepository(StepSensor stepSensor, int initStep) {
         this.stepSensor = stepSensor;
+        stepSensor.initStep(initStep);
         startInitStepTimer();
     }
 
@@ -24,16 +25,12 @@ public class StepRepository {
         return stepRepository;
     }
 
-    public static StepRepository setStepRepository(StepSensor stepSensor) {
+    public static StepRepository setStepRepository(StepSensor stepSensor, int initStep) {
         if (stepRepository == null) {
-            stepRepository = new StepRepository(stepSensor);
+            stepRepository = new StepRepository(stepSensor, initStep);
         }
 
         return stepRepository;
-    }
-
-    public void initStep() {
-        stepSensor.initStep();
     }
 
     public LiveData<Integer> getStep() {
@@ -46,13 +43,13 @@ public class StepRepository {
         new CountDownTimer(10 * 60 * 1000, 5 * 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                stepSensor.initStep();
+                stepSensor.resetStep();
                 Log.d(TAG, "init step");
             }
 
             @Override
             public void onFinish() {
-                stepSensor.initStep();
+                stepSensor.resetStep();
                 start();
             }
         }.start();

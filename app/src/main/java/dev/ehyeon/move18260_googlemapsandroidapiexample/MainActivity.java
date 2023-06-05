@@ -20,6 +20,7 @@ import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSe
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRepository;
 
+// TODO 초기화 로직 분리 필요
 public class MainActivity extends AppCompatActivity {
 
     private PermissionUtil permissionUtil;
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         StepSensor stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
 
-        StepRepository stepRepository = StepRepository.setStepRepository(stepSensor);
+        // TODO 기능 필요
+        StepRepository stepRepository = StepRepository.setStepRepository(stepSensor, 0);
 
         HomeFragment homeFragment = new HomeFragment();
         MapFragment mapFragment = new MapFragment();
