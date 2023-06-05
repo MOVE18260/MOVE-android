@@ -7,6 +7,10 @@
 2. 홈 화면에 날씨 관련 추가
 3. 데이터 바인딩 적용
 
+- `MapFragment.java`에 사용되는 `LocationRequest`는 `deprecated` 됨
+    - `LocationRequest().create()` 또한 `deprecated`
+    - `LocationRequest.Builder()` 는 버전이 맞지 않음, 결국 `LocationRequest` 채택
+
 ## Reference
 
 - init: project
@@ -19,5 +23,5 @@
 - 기타
     - [린트 검사로 코드 개선](https://developer.android.com/studio/write/lint?hl=ko)
 - DataStore
-  - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore?hl=ko#java)
-    - ! 코틀린 내부적으로 internal 사용해 자바에서 사용하지 못하고 있다.
+    - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore?hl=ko#java)
+        - ! 코틀린 내부적으로 internal 사용해 자바에서 사용하지 못하고 있다.
