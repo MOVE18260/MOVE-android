@@ -20,7 +20,6 @@ import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSe
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRepository;
 
-// TODO 초기화 로직 분리 필요
 public class MainActivity extends AppCompatActivity {
 
     private PermissionUtil permissionUtil;
@@ -39,14 +38,7 @@ public class MainActivity extends AppCompatActivity {
             permissionUtil.requestPermissions();
         }
 
-        locationSensor = LocationSensor.setLocationSensor((LocationManager) getSystemService(LOCATION_SERVICE));
-
-        locationSensor.startListening();
-
-        StepSensor stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
-
-        // TODO 기능 필요
-        StepRepository stepRepository = StepRepository.setStepRepository(stepSensor, 0);
+        init();
 
         HomeFragment homeFragment = new HomeFragment();
         MapFragment mapFragment = new MapFragment();
@@ -105,5 +97,23 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("종료", (dialog, which) -> finish())
                 .setCancelable(false)
                 .show();
+    }
+
+    // TODO INFO dependency injection 라이브러리 필요성 느낌
+    private void init() {
+        initStep();
+        initLocation();
+    }
+
+    private void initStep() {
+        StepSensor stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+
+        // TODO 기능 필요
+        StepRepository.setStepRepository(stepSensor, 0);
+    }
+
+    private void initLocation() {
+        locationSensor = LocationSensor.setLocationSensor((LocationManager) getSystemService(LOCATION_SERVICE));
+        locationSensor.startListening();
     }
 }
