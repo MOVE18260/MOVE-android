@@ -29,22 +29,23 @@ public class Time {
     }
 
     private void start() {
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                long currentTimeMillis = System.currentTimeMillis();
-
-                currentTime.setValue(currentTimeMillis);
-
-                Log.d(TAG, "time = " + currentTimeMillis);
-
-                handler.postDelayed(this, 1000 - currentTimeMillis % 1000);
-            }
-        };
-
-        handler.post(runnable);
+        // TODO 메모리 누수 -> 주석 처리
+//        Handler handler = new Handler(Looper.getMainLooper());
+//
+//        Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                long currentTimeMillis = System.currentTimeMillis();
+//
+//                currentTime.setValue(currentTimeMillis);
+//
+//                Log.d(TAG, "time = " + currentTimeMillis);
+//
+//                handler.postDelayed(this, 1000 - currentTimeMillis % 1000);
+//            }
+//        };
+//
+//        handler.post(runnable);
     }
 
     public LiveData<Long> getCurrentTime() {
