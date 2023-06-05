@@ -46,13 +46,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     private final LocationSensor locationSensor = LocationSensor.getLocationSensor();
 
+    private long previousTime;
+    private float totalDistance;
+    private float averageSpeed;
+
     private View view;
     private boolean tracking;
     private GoogleMap googleMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
     private Polyline polyline;
+    private List<LatLng> points;
 
+    private TextView tvTotalDistance;
+    private TextView tvAverageSpeed;
     private Button btnTracking;
 
     @Override
@@ -62,6 +69,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         // DEBUG 용도
         TextView tvLatitude = view.findViewById(R.id.latitude);
         TextView tvLongitude = view.findViewById(R.id.longitude);
+        tvTotalDistance = view.findViewById(R.id.totalDistance);
+        tvAverageSpeed = view.findViewById(R.id.averageSpeed);
         btnTracking = view.findViewById(R.id.trackingButton);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
@@ -121,6 +130,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         tracking = true;
         btnTracking.setText("STOP");
 
+        previousTime = System.currentTimeMillis();
+        totalDistance = averageSpeed = 0;
+
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(1 * 1000); // 1초
         locationRequest.setFastestInterval(5 * 100); // 0.5초
@@ -133,6 +145,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 if (location != null) {
                     updateMap(location);
+                    calculateAverageSpeed();
+                    tvTotalDistance.setText("이동 거리 = " + totalDistance + " Km");
+                    tvAverageSpeed.setText("평균 속도 = " + averageSpeed + " Km/h");
                 }
             }
         };
@@ -162,9 +177,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             polyline = googleMap.addPolyline(new PolylineOptions());
         }
 
-        List<LatLng> points = polyline.getPoints();
+        points = polyline.getPoints();
         points.add(latLng);
         polyline.setPoints(points);
+    }
+
+    private void calculateAverageSpeed() {
+        long currentTime = System.currentTimeMillis();
+
+        long elapsedTime = currentTime - previousTime;
+
+        float distanceSinceLastUpdate = calculateDistanceSinceLastUpdate();
+
+        totalDistance += distanceSinceLastUpdate;
+
+        float distanceInKm = totalDistance / 1000; // Km
+        float timeInHours = elapsedTime / (60 * 60 * 1000); // h
+
+        averageSpeed = timeInHours > 0 ? distanceInKm / timeInHours : 0; // Km/h
+
+        previousTime = currentTime; // 이전 시간 업데이트
+    }
+
+    private float calculateDistanceSinceLastUpdate() {
+        if (points.size() < 2) {
+            return 0f;
+        }
+
+        LatLng previousLatLng = points.get(points.size() - 2);
+        LatLng currentLatLng = points.get(points.size() - 1);
+
+        float[] results = new float[1];
+        Location.distanceBetween(
+                previousLatLng.latitude,
+                previousLatLng.longitude,
+                currentLatLng.latitude,
+                currentLatLng.longitude,
+                results);
+
+        return results[0];
     }
 
     @Override
@@ -182,6 +233,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         polyline = null;
 
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+
+        tvTotalDistance.setText("이동 거리 = ");
+        tvAverageSpeed.setText("평균 속도 = ");
     }
 
     @Override

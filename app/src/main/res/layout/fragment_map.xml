@@ -23,6 +23,18 @@
             android:layout_height="wrap_content"
             android:text="경도 = 127.7669" />
 
+        <TextView
+            android:id="@+id/totalDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="이동 거리 = " />
+
+        <TextView
+            android:id="@+id/averageSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="평균 속도 = " />
+
         <Button
             android:id="@+id/trackingButton"
             android:layout_width="wrap_content"

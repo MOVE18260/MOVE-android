@@ -11,6 +11,12 @@
     - `LocationRequest().create()` 또한 `deprecated`
     - `LocationRequest.Builder()` 는 버전이 맞지 않음, 결국 `LocationRequest` 채택
 
+## 문제점
+
+- 이동 거리 너무 크게 계산
+- 평균 속도 계산 안됨
+- Map -> START 버튼 -> END 버튼 -> 종료 시 오류 발생
+
 ## Reference
 
 - init: project
