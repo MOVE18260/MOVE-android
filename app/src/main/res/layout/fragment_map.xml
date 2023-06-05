@@ -23,6 +23,12 @@
             android:layout_height="wrap_content"
             android:text="경도 = 127.7669" />
 
+        <Button
+            android:id="@+id/trackingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="START" />
+
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"

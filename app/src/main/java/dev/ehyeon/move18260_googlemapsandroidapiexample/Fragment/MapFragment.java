@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,10 +47,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private final LocationSensor locationSensor = LocationSensor.getLocationSensor();
 
     private View view;
+    private boolean tracking;
     private GoogleMap googleMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
     private Polyline polyline;
+
+    private Button btnTracking;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +62,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         // DEBUG 용도
         TextView tvLatitude = view.findViewById(R.id.latitude);
         TextView tvLongitude = view.findViewById(R.id.longitude);
+        btnTracking = view.findViewById(R.id.trackingButton);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+        btnTracking.setOnClickListener(v -> {
+            if (tracking) {
+                Log.d(TAG, "STOP 버튼 누름");
+                stopLocationUpdates();
+            } else {
+                Log.d(TAG, "START 버튼 누름");
+                startLocationUpdates();
+            }
+        });
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(view.getContext());
 
@@ -100,14 +115,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     @Override
     public void onResume() {
         super.onResume();
-
-        startLocationUpdates();
     }
 
     private void startLocationUpdates() {
+        tracking = true;
+        btnTracking.setText("STOP");
+
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(1000); // 1초
-        locationRequest.setFastestInterval(500); // 0.5초
+        locationRequest.setInterval(1 * 1000); // 1초
+        locationRequest.setFastestInterval(5 * 100); // 0.5초
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
@@ -159,6 +175,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void stopLocationUpdates() {
+        tracking = false;
+        btnTracking.setText("START");
+
+        polyline.remove();
+        polyline = null;
+
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
