@@ -153,9 +153,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 if (location != null) {
                     updateMap(location);
+
                     calculate();
-                    tvTotalDistance.setText("이동 거리 = " + totalDistance + " m");
-                    tvAverageSpeed.setText("평균 속도 = " + averageSpeed + " m/s");
+
+                    if (totalDistance > 1000) {
+                        tvTotalDistance.setText("이동 거리 = " + roundNumberToI(totalDistance / 1000, 1) + " km");
+                    } else {
+                        tvTotalDistance.setText("이동 거리 = " + roundNumberToI(totalDistance, 1) + " m");
+                    }
+
+                    // m/s -> km/h
+                    tvAverageSpeed.setText("평균 속도 = " + roundNumberToI(averageSpeed / 3.6f, 1) + " km/h");
                 }
             }
         };
@@ -200,7 +208,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
         long timeInSeconds = (currentTime - previousTime) / 1000;
 
-        averageSpeed = timeInSeconds > 0 ? totalDistance / timeInSeconds : 0; // m/s
+        // infinity 문제 해결
+        if (!Float.isInfinite(totalDistance / timeInSeconds)) {
+            averageSpeed = totalDistance / timeInSeconds;
+        }
 
         Log.d(TAG, "totalDistance = " + totalDistance + " averageSpeed = " + averageSpeed);
 
@@ -218,6 +229,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         Location.distanceBetween(latLng1.latitude, latLng1.longitude, latLng2.latitude, latLng2.longitude, distance);
 
         return Math.abs(distance[0]);
+    }
+
+    private float roundNumberToI(float number, int i) {
+        float pow = (float) Math.pow(10, i);
+
+        return Math.round(number * pow) / pow;
     }
 
     @Override
