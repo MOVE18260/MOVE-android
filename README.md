@@ -11,6 +11,19 @@
     - `LocationRequest().create()` 또한 `deprecated`
     - `LocationRequest.Builder()` 는 버전이 맞지 않음, 결국 `LocationRequest` 채택
 
+### 프래그먼트 생명 주기
+
+- 현재 프래그먼트(A) → 다른 프래그먼트(B)
+
+  A 프래그먼트 시작 → A onAttach() → A onCreate() → A createView() → A onStart() → A onResume() → A 프래그먼트
+  실행 → A onPause() → A onStop() → A onDestroyView() → onDestory() → onDetach() → A 프래그먼트 종료 → B
+  프래그먼트 시작 → 생략
+
+- 현재 프래그먼트(A) → 홈 OR 화면 OFF → 프로그램 OR 화면 ON
+
+  A 프래그먼트 시작 → A onAttach() → A onCreate() → A createView() → A onStart() → A onResume() → A 프래그먼트
+  실행 → A onPause() → A onStop() (분기점) → A onStart() OR A onDestoryView() → 생략
+
 ## 문제점
 
 - 이동 거리 너무 크게 계산
