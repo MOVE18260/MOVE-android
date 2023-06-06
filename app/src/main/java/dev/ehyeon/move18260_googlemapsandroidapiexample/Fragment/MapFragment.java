@@ -76,10 +76,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
         btnTracking.setOnClickListener(v -> {
             if (tracking) {
-                Log.d(TAG, "STOP 버튼 누름");
+                Log.d(TAG, "press STOP button");
+
+                tracking = false;
+                btnTracking.setText("START");
+
                 stopLocationUpdates();
+
+                tvTotalDistance.setText("이동 거리 = ");
+                tvAverageSpeed.setText("평균 속도 = ");
             } else {
-                Log.d(TAG, "START 버튼 누름");
+                Log.d(TAG, "press START button");
+
+                tracking = true;
+                btnTracking.setText("STOP");
+
                 startLocationUpdates();
             }
         });
@@ -127,9 +138,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void startLocationUpdates() {
-        tracking = true;
-        btnTracking.setText("STOP");
-
         previousTime = System.currentTimeMillis();
         totalDistance = averageSpeed = 0;
 
@@ -226,16 +234,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void stopLocationUpdates() {
-        tracking = false;
-        btnTracking.setText("START");
-
         polyline.remove();
         polyline = null;
 
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-
-        tvTotalDistance.setText("이동 거리 = ");
-        tvAverageSpeed.setText("평균 속도 = ");
     }
 
     @Override
