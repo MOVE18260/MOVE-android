@@ -142,7 +142,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         totalDistance = averageSpeed = 0;
 
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(1 * 1000); // 1초
+        locationRequest.setInterval(1000); // 1초
         locationRequest.setFastestInterval(5 * 100); // 0.5초
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
@@ -153,9 +153,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 if (location != null) {
                     updateMap(location);
-                    calculateAverageSpeed();
-                    tvTotalDistance.setText("이동 거리 = " + totalDistance + " Km");
-                    tvAverageSpeed.setText("평균 속도 = " + averageSpeed + " Km/h");
+                    calculate();
+                    tvTotalDistance.setText("이동 거리 = " + totalDistance + " m");
+                    tvAverageSpeed.setText("평균 속도 = " + averageSpeed + " m/s");
                 }
             }
         };
@@ -190,40 +190,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         polyline.setPoints(points);
     }
 
-    private void calculateAverageSpeed() {
+    // 이동 거리(meter), 평균 속도(meter per second) 계산
+    private void calculate() {
+        // 이동 거리 계산
+        totalDistance += getDistanceThroughPoints(points);
+
+        // 평균 속도 계산
         long currentTime = System.currentTimeMillis();
 
-        long elapsedTime = currentTime - previousTime;
+        long timeInSeconds = (currentTime - previousTime) / 1000;
 
-        float distanceSinceLastUpdate = calculateDistanceSinceLastUpdate();
+        averageSpeed = timeInSeconds > 0 ? totalDistance / timeInSeconds : 0; // m/s
 
-        totalDistance += distanceSinceLastUpdate;
+        Log.d(TAG, "totalDistance = " + totalDistance + " averageSpeed = " + averageSpeed);
 
-        float distanceInKm = totalDistance / 1000; // Km
-        float timeInHours = elapsedTime / (60 * 60 * 1000); // h
-
-        averageSpeed = timeInHours > 0 ? distanceInKm / timeInHours : 0; // Km/h
-
-        previousTime = currentTime; // 이전 시간 업데이트
+        // 이전 시간 갱신
+        previousTime = currentTime;
     }
 
-    private float calculateDistanceSinceLastUpdate() {
-        if (points.size() < 2) {
-            return 0f;
-        }
+    private float getDistanceThroughPoints(List<LatLng> points) {
+        return points.size() < 2 ? 0 : getDistanceBetweenTwoLatLng(points.get(points.size() - 2), points.get(points.size() - 1));
+    }
 
-        LatLng previousLatLng = points.get(points.size() - 2);
-        LatLng currentLatLng = points.get(points.size() - 1);
+    private float getDistanceBetweenTwoLatLng(LatLng latLng1, LatLng latLng2) {
+        float[] distance = new float[1];
 
-        float[] results = new float[1];
-        Location.distanceBetween(
-                previousLatLng.latitude,
-                previousLatLng.longitude,
-                currentLatLng.latitude,
-                currentLatLng.longitude,
-                results);
+        Location.distanceBetween(latLng1.latitude, latLng1.longitude, latLng2.latitude, latLng2.longitude, distance);
 
-        return results[0];
+        return Math.abs(distance[0]);
     }
 
     @Override
