@@ -84,7 +84,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 stopLocationUpdates();
 
                 tvTotalDistance.setText("이동 거리 = ");
-                tvAverageSpeed.setText("평균 속도 = ");
+                tvAverageSpeed.setText("평균 속력 = ");
             } else {
                 Log.d(TAG, "press START button");
 
@@ -163,7 +163,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     }
 
                     // m/s -> km/h
-                    tvAverageSpeed.setText("평균 속도 = " + roundNumberToI(averageSpeed / 3.6f, 1) + " km/h");
+                    tvAverageSpeed.setText("평균 속력 = " + roundNumberToI(averageSpeed / 3.6f, 1) + " km/h");
                 }
             }
         };
@@ -198,12 +198,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         polyline.setPoints(points);
     }
 
-    // 이동 거리(meter), 평균 속도(meter per second) 계산
+    // 이동 거리(meter), 평균 속력(meter per second) 계산
     private void calculate() {
         // 이동 거리 계산
         totalDistance += getDistanceThroughPoints(points);
 
-        // 평균 속도 계산
+        // 평균 속력 계산
         long currentTime = System.currentTimeMillis();
 
         long timeInSeconds = (currentTime - previousTime) / 1000;
