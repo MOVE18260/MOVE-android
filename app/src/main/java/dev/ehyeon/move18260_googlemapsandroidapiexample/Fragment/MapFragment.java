@@ -46,7 +46,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     private final LocationSensor locationSensor = LocationSensor.getLocationSensor();
 
-    private long previousTime;
+    private long startTime;
     private float totalDistance;
     private float averageSpeed;
 
@@ -138,7 +138,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void startLocationUpdates() {
-        previousTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         totalDistance = averageSpeed = 0;
 
         LocationRequest locationRequest = new LocationRequest();
@@ -162,8 +162,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                         tvTotalDistance.setText("이동 거리 = " + roundNumberToI(totalDistance, 1) + " m");
                     }
 
-                    // m/s -> km/h
-                    tvAverageSpeed.setText("평균 속력 = " + roundNumberToI(averageSpeed / 3.6f, 1) + " km/h");
+                    tvAverageSpeed.setText("평균 속력 = " + roundNumberToI(averageSpeed, 1) + " km/h");
                 }
             }
         };
@@ -203,20 +202,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         // 이동 거리 계산
         totalDistance += getDistanceThroughPoints(points);
 
-        // 평균 속력 계산
-        long currentTime = System.currentTimeMillis();
-
-        long timeInSeconds = (currentTime - previousTime) / 1000;
-
-        // infinity 문제 해결
-        if (!Float.isInfinite(totalDistance / timeInSeconds)) {
-            averageSpeed = totalDistance / timeInSeconds;
-        }
+        // km/h
+        averageSpeed = (totalDistance / 1000) / (((float) (System.currentTimeMillis() - startTime)) / (60 * 60 * 1000));
 
         Log.d(TAG, "totalDistance = " + totalDistance + " averageSpeed = " + averageSpeed);
-
-        // 이전 시간 갱신
-        previousTime = currentTime;
     }
 
     private float getDistanceThroughPoints(List<LatLng> points) {
