@@ -47,8 +47,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private final LocationSensor locationSensor = LocationSensor.getLocationSensor();
 
     private long startTime;
+    private long previousTime;
     private float totalDistance;
     private float averageSpeed;
+    private float maxSpeed;
 
     private View view;
     private boolean tracking;
@@ -60,6 +62,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     private TextView tvTotalDistance;
     private TextView tvAverageSpeed;
+    private TextView tvMaxSpeed;
     private Button btnTracking;
 
     @Override
@@ -71,6 +74,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         TextView tvLongitude = view.findViewById(R.id.longitude);
         tvTotalDistance = view.findViewById(R.id.totalDistance);
         tvAverageSpeed = view.findViewById(R.id.averageSpeed);
+        tvMaxSpeed = view.findViewById(R.id.maxSpeed);
         btnTracking = view.findViewById(R.id.trackingButton);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
@@ -138,8 +142,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void startLocationUpdates() {
-        startTime = System.currentTimeMillis();
-        totalDistance = averageSpeed = 0;
+        startTime = previousTime = System.currentTimeMillis();
+        totalDistance = averageSpeed = maxSpeed = 0;
 
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(1000); // 1초
@@ -163,6 +167,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     }
 
                     tvAverageSpeed.setText("평균 속력 = " + roundNumberToI(averageSpeed, 1) + " km/h");
+                    tvMaxSpeed.setText("최고 속력 = " + roundNumberToI(maxSpeed, 1) + "km/h");
                 }
             }
         };
@@ -200,12 +205,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     // 이동 거리(meter), 평균 속력(meter per second) 계산
     private void calculate() {
         // 이동 거리 계산
-        totalDistance += getDistanceThroughPoints(points);
+        float distance = getDistanceThroughPoints(points);
+
+        totalDistance += distance;
 
         // km/h
-        averageSpeed = (totalDistance / 1000) / (((float) (System.currentTimeMillis() - startTime)) / (60 * 60 * 1000));
+        long currentTime = System.currentTimeMillis();
 
-        Log.d(TAG, "totalDistance = " + totalDistance + " averageSpeed = " + averageSpeed);
+        // TODO 기능 분리, GPS 보정 필요
+        averageSpeed = (totalDistance / 1000) / (((float) (currentTime - startTime) / 1000) / (60 * 60));
+
+        maxSpeed = Math.max(maxSpeed, (distance / 1000) / (((float) (currentTime - previousTime) / 1000) / (60 * 60)));
+
+        previousTime = currentTime;
+
+        Log.d(TAG, "distance = " + distance);
+        Log.d(TAG, "totalDistance = " + totalDistance);
+        Log.d(TAG, "averageSpeed = " + averageSpeed);
+        Log.d(TAG, "maxSpeed = " + maxSpeed);
     }
 
     private float getDistanceThroughPoints(List<LatLng> points) {
