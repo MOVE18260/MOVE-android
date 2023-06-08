@@ -251,13 +251,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         return i / 3600000; // 60 * 60 * 1000
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        stopLocationUpdates();
-    }
-
     private void stopLocationUpdates() {
         polyline.remove();
         polyline = null;
@@ -272,5 +265,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        stopLocationUpdates();
     }
 }
