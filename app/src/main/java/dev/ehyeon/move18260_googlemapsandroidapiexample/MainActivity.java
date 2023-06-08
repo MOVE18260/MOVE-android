@@ -45,19 +45,40 @@ public class MainActivity extends AppCompatActivity {
         MapFragment mapFragment = new MapFragment();
         ProfileFragment profileFragment = new ProfileFragment();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.containers, homeFragment).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.containers, homeFragment).commit();
 
         NavigationBarView navigationBarView = findViewById(R.id.main_bottomNavigationView);
 
         navigationBarView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.menu_home) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.containers, homeFragment).commit();
+                if (homeFragment.isAdded()) {
+                    getSupportFragmentManager().beginTransaction().show(homeFragment).commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction().add(R.id.containers, homeFragment).commit();
+                }
+
+                getSupportFragmentManager().beginTransaction().hide(mapFragment).commit();
+                getSupportFragmentManager().beginTransaction().hide(profileFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.menu_map) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.containers, mapFragment).commit();
+                if (mapFragment.isAdded()) {
+                    getSupportFragmentManager().beginTransaction().show(mapFragment).commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction().add(R.id.containers, mapFragment).commit();
+                }
+
+                getSupportFragmentManager().beginTransaction().hide(homeFragment).commit();
+                getSupportFragmentManager().beginTransaction().hide(profileFragment).commit();
                 return true;
             } else if (item.getItemId() == R.id.menu_profile) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.containers, profileFragment).commit();
+                if (profileFragment.isAdded()) {
+                    getSupportFragmentManager().beginTransaction().show(profileFragment).commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction().add(R.id.containers, profileFragment).commit();
+                }
+
+                getSupportFragmentManager().beginTransaction().hide(homeFragment).commit();
+                getSupportFragmentManager().beginTransaction().hide(mapFragment).commit();
                 return true;
             }
             return false;
