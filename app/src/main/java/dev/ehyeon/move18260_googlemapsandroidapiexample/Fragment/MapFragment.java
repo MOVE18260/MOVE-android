@@ -43,12 +43,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     private static final String TAG = "MapFragment";
 
-    private long startTime;
-    private long previousTime;
-    private float totalDistance;
-    private float averageSpeed;
-    private float maxSpeed;
-
     private View view;
     private boolean tracking;
     private GoogleMap googleMap;
@@ -61,6 +55,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private TextView tvAverageSpeed;
     private TextView tvMaxSpeed;
     private Button btnTracking;
+
+    private long startTime;
+    private long previousTime;
+    private float totalDistance;
+    private float averageSpeed;
+    private float maxSpeed;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,12 +128,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         });
     }
 
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
     private void startLocationUpdates() {
         startTime = previousTime = System.currentTimeMillis();
         totalDistance = averageSpeed = maxSpeed = 0;
@@ -141,7 +135,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(1000); // 1초
         locationRequest.setFastestInterval(5 * 100); // 0.5초
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
             @Override
@@ -160,7 +154,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                     }
 
                     tvAverageSpeed.setText("평균 속력 = " + roundNumberToI(averageSpeed, 1) + " km/h");
-                    tvMaxSpeed.setText("최고 속력 = " + roundNumberToI(maxSpeed, 1) + "km/h");
+                    tvMaxSpeed.setText("최고 속력 = " + roundNumberToI(maxSpeed, 1) + " km/h");
                 }
             }
         };
@@ -226,7 +220,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
         previousTime = currentTime;
 
-        Log.d(TAG, "distance = " + distance);
         Log.d(TAG, "totalDistance = " + totalDistance);
         Log.d(TAG, "averageSpeed = " + averageSpeed);
         Log.d(TAG, "maxSpeed = " + maxSpeed);
