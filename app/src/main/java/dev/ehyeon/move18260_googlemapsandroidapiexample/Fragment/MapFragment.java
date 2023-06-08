@@ -202,7 +202,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         polyline.setPoints(points);
     }
 
-    // 이동 거리(meter), 평균 속력(meter per second) 계산
+    // 이동 거리(meter)
     private void calculate() {
         // 이동 거리 계산
         float distance = getDistanceThroughPoints(points);
@@ -212,10 +212,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         // km/h
         long currentTime = System.currentTimeMillis();
 
-        // TODO GPS 보정 필요
         averageSpeed = metersToKiloMeters(totalDistance) / millisecondsToHours(currentTime - startTime);
 
-        maxSpeed = Math.max(maxSpeed, metersToKiloMeters(distance) / millisecondsToHours(currentTime - previousTime));
+        // 최고 속력 보정 적용
+        float currentMaxSpeed = metersToKiloMeters(distance) / millisecondsToHours(currentTime - previousTime);
+
+        if (currentMaxSpeed < 36 && maxSpeed < currentMaxSpeed) {
+            float correctionValue;
+
+            if (maxSpeed < 3) {
+                correctionValue = 1.1f;
+            } else if (maxSpeed < 6) {
+                correctionValue = 0.09f;
+            } else {
+                correctionValue = 0.07f;
+            }
+
+            maxSpeed += Math.min(correctionValue, currentMaxSpeed);
+        }
 
         previousTime = currentTime;
 
