@@ -15,14 +15,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
@@ -32,19 +31,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 
 import java.util.List;
 
 import dev.ehyeon.move18260_googlemapsandroidapiexample.R;
-import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSensor;
-import dev.ehyeon.move18260_googlemapsandroidapiexample.presentation.viewmodel.LocationViewModel;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback,
         OnMyLocationButtonClickListener, OnMyLocationClickListener {
 
     private static final String TAG = "MapFragment";
-
-    private final LocationSensor locationSensor = LocationSensor.getLocationSensor();
 
     private long startTime;
     private long previousTime;
@@ -69,9 +66,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        // DEBUG 용도
-        TextView tvLatitude = view.findViewById(R.id.latitude);
-        TextView tvLongitude = view.findViewById(R.id.longitude);
         tvTotalDistance = view.findViewById(R.id.totalDistance);
         tvAverageSpeed = view.findViewById(R.id.averageSpeed);
         tvMaxSpeed = view.findViewById(R.id.maxSpeed);
@@ -86,9 +80,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 btnTracking.setText("START");
 
                 stopLocationUpdates();
-
-                tvTotalDistance.setText("이동 거리 = ");
-                tvAverageSpeed.setText("평균 속력 = ");
             } else {
                 Log.d(TAG, "press START button");
 
@@ -100,19 +91,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         });
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(view.getContext());
-
-        LocationViewModel locationSensor = new ViewModelProvider(this, new ViewModelProvider.Factory() {
-            @NonNull
-            @Override
-            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-                return (T) new LocationViewModel(LocationSensor.getLocationSensor());
-            }
-        }).get(LocationViewModel.class);
-
-        locationSensor.getLatitude().observe(getViewLifecycleOwner(),
-                latitude -> tvLatitude.setText("위도 = " + latitude));
-        locationSensor.getLongitude().observe(getViewLifecycleOwner(),
-                longitude -> tvLongitude.setText("경도 = " + longitude));
 
         mapFragment.getMapAsync(this);
 
@@ -128,11 +106,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
 
-        Location lastKnownLocation = locationSensor.getLastKnownLocation();
+        fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
+            @NonNull
+            @Override
+            public CancellationToken onCanceledRequested(@NonNull OnTokenCanceledListener onTokenCanceledListener) {
+                return null;
+            }
 
-        // zoom = 15 == 반경 1.5km
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), 15));
+            @Override
+            public boolean isCancellationRequested() {
+                return false;
+            }
+        }).addOnSuccessListener(location -> {
+            if (location != null) {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(location.getLatitude(), location.getLongitude()), 15));
+            } else {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(35.9078, 127.7669), 15));
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
