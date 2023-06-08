@@ -212,10 +212,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         // km/h
         long currentTime = System.currentTimeMillis();
 
-        // TODO 기능 분리, GPS 보정 필요
-        averageSpeed = (totalDistance / 1000) / (((float) (currentTime - startTime) / 1000) / (60 * 60));
+        // TODO GPS 보정 필요
+        averageSpeed = metersToKiloMeters(totalDistance) / millisecondsToHours(currentTime - startTime);
 
-        maxSpeed = Math.max(maxSpeed, (distance / 1000) / (((float) (currentTime - previousTime) / 1000) / (60 * 60)));
+        maxSpeed = Math.max(maxSpeed, metersToKiloMeters(distance) / millisecondsToHours(currentTime - previousTime));
 
         previousTime = currentTime;
 
@@ -241,6 +241,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         float pow = (float) Math.pow(10, i);
 
         return Math.round(number * pow) / pow;
+    }
+
+    private float metersToKiloMeters(float i) {
+        return i / 1000;
+    }
+
+    private float millisecondsToHours(float i) {
+        return i / 3600000; // 60 * 60 * 1000
     }
 
     @Override
