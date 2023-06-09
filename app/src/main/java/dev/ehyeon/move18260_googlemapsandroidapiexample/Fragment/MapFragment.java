@@ -35,6 +35,8 @@ import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import dev.ehyeon.move18260_googlemapsandroidapiexample.R;
 
@@ -52,10 +54,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private Marker startMarker;
     private Marker finishMarker;
 
+    private TextView tvTime;
     private TextView tvTotalDistance;
     private TextView tvAverageSpeed;
     private TextView tvMaxSpeed;
     private Button btnTracking;
+
+    private Timer timer;
+    private TimerTask timerTask;
+    private long seconds;
 
     private long startTime;
     private long previousTime;
@@ -67,11 +74,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
+        tvTime = view.findViewById(R.id.time);
         tvTotalDistance = view.findViewById(R.id.totalDistance);
         tvAverageSpeed = view.findViewById(R.id.averageSpeed);
         tvMaxSpeed = view.findViewById(R.id.maxSpeed);
         btnTracking = view.findViewById(R.id.trackingButton);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+        timer = new Timer();
+
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                String timeText;
+
+                if (seconds > 3600) {
+                    timeText = "시간 = " + seconds / 3600 % 24 + "시 " +
+                            seconds / 60 % 60 + "분 " + seconds % 60 + "초";
+                } else if (seconds > 60) {
+                    timeText = "시간 = " + seconds / 60 % 60 + "분 " + seconds % 60 + "초";
+                } else {
+                    timeText = "시간 = " + seconds % 60 + "초";
+                }
+
+                tvTime.setText(timeText);
+
+                seconds++;
+            }
+        };
 
         btnTracking.setOnClickListener(v -> {
             if (tracking) {
@@ -79,6 +109,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 tracking = false;
                 btnTracking.setText("START");
+
+                timer.cancel();
+                seconds = 0;
 
                 List<LatLng> points = polyline.getPoints();
 
@@ -98,6 +131,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
                 tracking = true;
                 btnTracking.setText("STOP");
+
+                timer.schedule(timerTask, 0, 1000);
 
                 if (startMarker != null) {
                     startMarker.remove();
@@ -272,6 +307,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     public void onDestroy() {
         super.onDestroy();
 
+        timer.cancel();
         stopLocationUpdates();
     }
 }
