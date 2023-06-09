@@ -7,6 +7,29 @@
 2. 홈 화면에 날씨 관련 추가
 3. 데이터 바인딩 적용
 
+- `MapFragment.java`에 사용되는 `LocationRequest`는 `deprecated` 됨
+    - `LocationRequest().create()` 또한 `deprecated`
+    - `LocationRequest.Builder()` 는 버전이 맞지 않음, 결국 `LocationRequest` 채택
+
+### 프래그먼트 생명 주기
+
+- 현재 프래그먼트(A) → 다른 프래그먼트(B)
+
+  A 프래그먼트 시작 → A onAttach() → A onCreate() → A createView() → A onStart() → A onResume() → A 프래그먼트
+  실행 → A onPause() → A onStop() → A onDestroyView() → onDestory() → onDetach() → A 프래그먼트 종료 → B
+  프래그먼트 시작 → 생략
+
+- 현재 프래그먼트(A) → 홈 OR 화면 OFF → 프로그램 OR 화면 ON
+
+  A 프래그먼트 시작 → A onAttach() → A onCreate() → A createView() → A onStart() → A onResume() → A 프래그먼트
+  실행 → A onPause() → A onStop() (분기점) → A onStart() OR A onDestoryView() → 생략
+
+## 문제점
+
+- 이동 거리 너무 크게 계산
+- 평균 속도 계산 안됨
+- Map -> START 버튼 -> END 버튼 -> 종료 시 오류 발생
+
 ## Reference
 
 - init: project
@@ -19,5 +42,5 @@
 - 기타
     - [린트 검사로 코드 개선](https://developer.android.com/studio/write/lint?hl=ko)
 - DataStore
-  - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore?hl=ko#java)
-    - ! 코틀린 내부적으로 internal 사용해 자바에서 사용하지 못하고 있다.
+    - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore?hl=ko#java)
+        - ! 코틀린 내부적으로 internal 사용해 자바에서 사용하지 못하고 있다.

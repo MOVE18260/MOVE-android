@@ -5,23 +5,40 @@
     android:layout_height="match_parent"
     tools:context=".Fragment.MapFragment">
 
-    <!-- TODO clear, 테스트 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/latitude"
+            android:id="@+id/time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="위도 = 35.9078" />
+            android:text="시간 = " />
 
         <TextView
-            android:id="@+id/longitude"
+            android:id="@+id/totalDistance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="경도 = 127.7669" />
+            android:text="이동 거리 = " />
+
+        <TextView
+            android:id="@+id/averageSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="평균 속도 = " />
+
+        <TextView
+            android:id="@+id/maxSpeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="최고 속도 = " />
+
+        <Button
+            android:id="@+id/trackingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="START" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/map"
