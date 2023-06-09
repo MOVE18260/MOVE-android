@@ -105,7 +105,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
         btnTracking.setOnClickListener(v -> {
             if (tracking) {
-                Log.d(TAG, "press STOP button");
+                Log.d(TAG, "press FINISH button");
 
                 tracking = false;
                 btnTracking.setText("START");
@@ -130,7 +130,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 Log.d(TAG, "press START button");
 
                 tracking = true;
-                btnTracking.setText("STOP");
+                btnTracking.setText("FINISH");
 
                 timer.schedule(timerTask, 0, 1000);
 
