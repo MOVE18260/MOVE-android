@@ -25,7 +25,10 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.CancellationToken;
@@ -46,6 +49,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
     private Polyline polyline;
+    private Marker startMarker;
+    private Marker finishMarker;
 
     private TextView tvTotalDistance;
     private TextView tvAverageSpeed;
@@ -75,12 +80,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 tracking = false;
                 btnTracking.setText("START");
 
+                List<LatLng> points = polyline.getPoints();
+
+                startMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(points.get(0))
+                        .title("START")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+
+                finishMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(points.get(points.size() - 1))
+                        .title("FINISH")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.finish)));
+
                 stopLocationUpdates();
             } else {
                 Log.d(TAG, "press START button");
 
                 tracking = true;
                 btnTracking.setText("STOP");
+
+                if (startMarker != null) {
+                    startMarker.remove();
+                }
+
+                if (finishMarker != null) {
+                    finishMarker.remove();
+                }
 
                 startLocationUpdates();
             }
