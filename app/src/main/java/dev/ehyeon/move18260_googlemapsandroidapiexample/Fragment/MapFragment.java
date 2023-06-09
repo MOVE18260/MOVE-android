@@ -1,8 +1,6 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +11,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,13 +40,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     private static final String TAG = "MapFragment";
 
-    private View view;
     private boolean tracking;
+
     private GoogleMap googleMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
     private Polyline polyline;
-    private List<LatLng> points;
 
     private TextView tvTotalDistance;
     private TextView tvAverageSpeed;
@@ -64,7 +60,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_map, container, false);
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
 
         tvTotalDistance = view.findViewById(R.id.totalDistance);
         tvAverageSpeed = view.findViewById(R.id.averageSpeed);
@@ -118,19 +114,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 return false;
             }
         }).addOnSuccessListener(location -> {
-            if (location != null) {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(location.getLatitude(), location.getLongitude()), 15));
-            } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(35.9078, 127.7669), 15));
-            }
+            LatLng latLng = location != null ?
+                    new LatLng(location.getLatitude(), location.getLongitude()) :
+                    new LatLng(35.9078, 127.7669);
+
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         });
     }
 
+    @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         startTime = previousTime = System.currentTimeMillis();
         totalDistance = averageSpeed = maxSpeed = 0;
+
+        if (polyline != null) {
+            polyline.remove();
+        }
+
+        polyline = googleMap.addPolyline(new PolylineOptions());
 
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(1000); // 1초
@@ -142,55 +143,33 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location location = locationResult.getLastLocation();
 
-                if (location != null) {
-                    updateMap(location);
+                Log.d(TAG, "latitude = " + location.getLatitude() + " longitude = " + location.getLongitude());
 
-                    calculate();
+                List<LatLng> points = polyline.getPoints();
 
-                    if (totalDistance > 1000) {
-                        tvTotalDistance.setText("이동 거리 = " + roundNumberToI(totalDistance / 1000, 1) + " km");
-                    } else {
-                        tvTotalDistance.setText("이동 거리 = " + roundNumberToI(totalDistance, 1) + " m");
-                    }
+                points.add(new LatLng(location.getLatitude(), location.getLongitude()));
 
-                    tvAverageSpeed.setText("평균 속력 = " + roundNumberToI(averageSpeed, 1) + " km/h");
-                    tvMaxSpeed.setText("최고 속력 = " + roundNumberToI(maxSpeed, 1) + " km/h");
+                polyline.setPoints(points);
+
+                // TODO 프래그먼트, 계산 분리
+                calculate(points);
+
+                if (totalDistance > 1000) {
+                    tvTotalDistance.setText("이동 거리 = " + roundNumberToI(totalDistance / 1000, 1) + " km");
+                } else {
+                    tvTotalDistance.setText("이동 거리 = " + roundNumberToI(totalDistance, 1) + " m");
                 }
+
+                tvAverageSpeed.setText("평균 속력 = " + roundNumberToI(averageSpeed, 1) + " km/h");
+                tvMaxSpeed.setText("최고 속력 = " + roundNumberToI(maxSpeed, 1) + " km/h");
             }
         };
-
-        if (ActivityCompat.checkSelfPermission(view.getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(view.getContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
-    private void updateMap(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-        addPolyline(latLng);
-
-        Log.d(TAG, "latitude = " + location.getLatitude() + " longitude = " + location.getLongitude());
-
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-    }
-
-    private void addPolyline(LatLng latLng) {
-        if (polyline == null) {
-            polyline = googleMap.addPolyline(new PolylineOptions());
-        }
-
-        points = polyline.getPoints();
-        points.add(latLng);
-        polyline.setPoints(points);
-    }
-
     // 이동 거리(meter)
-    private void calculate() {
+    private void calculate(List<LatLng> points) {
         // 이동 거리 계산
         float distance = getDistanceThroughPoints(points);
 
@@ -252,9 +231,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void stopLocationUpdates() {
-        polyline.remove();
-        polyline = null;
-
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
