@@ -3,6 +3,7 @@ package dev.ehyeon.move18260_googlemapsandroidapiexample;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -24,6 +25,8 @@ import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRe
 public class MainActivity extends AppCompatActivity {
 
     private PermissionUtil permissionUtil;
+
+    private StepSensor stepSensor;
 
     private LocationSensor locationSensor;
 
@@ -133,14 +136,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initStep() {
-        StepSensor stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+        stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+
+        SharedPreferences stepSharedPreferences = this.getSharedPreferences("step", Context.MODE_PRIVATE);
 
         // TODO 기능 필요
-        StepRepository.setStepRepository(stepSensor, 0);
+        StepRepository.setStepRepository(stepSensor, stepSharedPreferences.getInt("step", 0));
+
+        stepSensor.startSensor();
     }
 
     private void initLocation() {
         locationSensor = LocationSensor.setLocationSensor((LocationManager) getSystemService(LOCATION_SERVICE));
         locationSensor.startListening();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        stepSensor.stopSensor();
     }
 }

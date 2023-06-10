@@ -1,15 +1,12 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository;
 
-import android.os.CountDownTimer;
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
 
 public class StepRepository {
 
-    private static final String TAG = "StepRepository";
+//    private static final String TAG = "StepRepository";
 
     private static StepRepository stepRepository = null;
 
@@ -18,7 +15,7 @@ public class StepRepository {
     private StepRepository(StepSensor stepSensor, int initStep) {
         this.stepSensor = stepSensor;
         stepSensor.initStep(initStep);
-        startInitStepTimer();
+//        startInitStepTimer();
     }
 
     public static StepRepository getStepRepository() {
@@ -38,20 +35,20 @@ public class StepRepository {
     }
 
     // TODO refactor
-    private void startInitStepTimer() {
-        // 총 10분, 5 초씩 onTick
-        new CountDownTimer(10 * 60 * 1000, 5 * 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                stepSensor.resetStep();
-                Log.d(TAG, "init step");
-            }
-
-            @Override
-            public void onFinish() {
-                stepSensor.resetStep();
-                start();
-            }
-        }.start();
-    }
+//    private void startInitStepTimer() {
+//        // 총 10분, 5 초씩 onTick
+//        new CountDownTimer(10 * 60 * 1000, 5 * 1000) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//                stepSensor.resetStep();
+//                Log.d(TAG, "init step");
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                stepSensor.resetStep();
+//                start();
+//            }
+//        }.start();
+//    }
 }
