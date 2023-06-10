@@ -1,7 +1,5 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,16 +16,6 @@ import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRe
 import dev.ehyeon.move18260_googlemapsandroidapiexample.presentation.viewmodel.StepViewModel;
 
 public class HomeFragment extends Fragment {
-
-    private SharedPreferences stepSharedPreferences;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        stepSharedPreferences = this.getActivity().
-                getSharedPreferences("step", Context.MODE_PRIVATE);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,17 +31,8 @@ public class HomeFragment extends Fragment {
             }
         }).get(StepViewModel.class);
 
-        stepViewModel.getStep().observe(getViewLifecycleOwner(), step -> {
-            saveStep(step);
-            tvStep.setText("걸음 수 = " + step);
-        });
+        stepViewModel.getStep().observe(getViewLifecycleOwner(), step -> tvStep.setText("걸음 수 = " + step));
 
         return view;
-    }
-
-    private void saveStep(int step) {
-        SharedPreferences.Editor editor = stepSharedPreferences.edit();
-        editor.putInt("step", step);
-        editor.apply();
     }
 }

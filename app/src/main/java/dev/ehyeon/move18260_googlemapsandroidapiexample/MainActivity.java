@@ -1,9 +1,10 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -41,6 +42,25 @@ public class MainActivity extends AppCompatActivity {
         if (!permissionUtil.hasPermissions()) {
             permissionUtil.requestPermissions();
         }
+
+        // TODO 정리
+        // 1. 객체 생성
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+//        calendar.set(Calendar.HOUR_OF_DAY, 0);
+//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.set(Calendar.SECOND, 0);
+
+        // 1분마다 업데이트
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                60 * 1000, pendingIntent);
+
 
         init();
 
@@ -136,12 +156,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initStep() {
-        stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+        stepSensor = StepSensor.setStepSensor(getSharedPreferences("step", MODE_PRIVATE),
+                (SensorManager) getSystemService(Context.SENSOR_SERVICE));
 
-        SharedPreferences stepSharedPreferences = this.getSharedPreferences("step", Context.MODE_PRIVATE);
-
-        // TODO 기능 필요
-        StepRepository.setStepRepository(stepSensor, stepSharedPreferences.getInt("step", 0));
+        StepRepository.setStepRepository(stepSensor);
 
         stepSensor.startSensor();
     }

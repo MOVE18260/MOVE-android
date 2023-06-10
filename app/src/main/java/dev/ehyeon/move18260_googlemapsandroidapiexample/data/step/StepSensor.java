@@ -1,5 +1,6 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample.data.step;
 
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
@@ -12,18 +13,18 @@ public class StepSensor {
     private final SensorManager sensorManager;
     private final StepSensorEventListenerImpl sensorEventListener;
 
-    private StepSensor(SensorManager sensorManager) {
+    private StepSensor(SharedPreferences stepSharedPreferences, SensorManager sensorManager) {
         this.sensorManager = sensorManager;
-        sensorEventListener = new StepSensorEventListenerImpl(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR));
+        sensorEventListener = new StepSensorEventListenerImpl(stepSharedPreferences, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR));
     }
 
     public static StepSensor getStepSensor() {
         return stepSensor;
     }
 
-    public static StepSensor setStepSensor(SensorManager sensorManager) {
+    public static StepSensor setStepSensor(SharedPreferences stepSharedPreferences, SensorManager sensorManager) {
         if (stepSensor == null) {
-            stepSensor = new StepSensor(sensorManager);
+            stepSensor = new StepSensor(stepSharedPreferences, sensorManager);
         }
 
         return stepSensor;
@@ -35,14 +36,6 @@ public class StepSensor {
 
     public void stopSensor() {
         sensorManager.unregisterListener(sensorEventListener);
-    }
-
-    public void initStep(int step) {
-        sensorEventListener.initStep(step);
-    }
-
-    public void resetStep() {
-        sensorEventListener.resetStep();
     }
 
     public LiveData<Integer> getStep() {
