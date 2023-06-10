@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         TextView tvStep = view.findViewById(R.id.step);
+        ImageView ivDinosaur = view.findViewById(R.id.dinosaur);
 
         StepViewModel stepViewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @NonNull
@@ -31,7 +33,10 @@ public class HomeFragment extends Fragment {
             }
         }).get(StepViewModel.class);
 
-        stepViewModel.getStep().observe(getViewLifecycleOwner(), step -> tvStep.setText("걸음 수 = " + step));
+        stepViewModel.getStep().observe(getViewLifecycleOwner(), step -> {
+            tvStep.setText("걸음 수 = " + step);
+            ivDinosaur.setImageResource((step & 1) == 0 ? R.drawable.dinosaur_1 : R.drawable.dinosaur_2);
+        });
 
         return view;
     }

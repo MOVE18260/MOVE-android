@@ -9,5 +9,12 @@
         android:id="@+id/step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="걸음 수 ="/>
+        android:text="걸음 수 =" />
+
+    <ImageView
+        android:id="@+id/dinosaur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:src="@drawable/dinosaur_1" />
 </FrameLayout>
