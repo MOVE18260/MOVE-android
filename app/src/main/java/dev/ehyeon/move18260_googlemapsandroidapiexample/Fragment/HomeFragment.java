@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +25,11 @@ public class HomeFragment extends Fragment {
 
         TextView tvStep = view.findViewById(R.id.step);
         ImageView ivDinosaur = view.findViewById(R.id.dinosaur);
+        CheckBox cb1 = view.findViewById(R.id.checkBox_1);
+        CheckBox cb2 = view.findViewById(R.id.checkBox_2);
+        CheckBox cb3 = view.findViewById(R.id.checkBox_3);
+        CheckBox cb4 = view.findViewById(R.id.checkBox_4);
+        CheckBox cb5 = view.findViewById(R.id.checkBox_5);
 
         StepViewModel stepViewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @NonNull
@@ -36,6 +42,26 @@ public class HomeFragment extends Fragment {
         stepViewModel.getStep().observe(getViewLifecycleOwner(), step -> {
             tvStep.setText("걸음 수 = " + step);
             ivDinosaur.setImageResource((step & 1) == 0 ? R.drawable.dinosaur_1 : R.drawable.dinosaur_2);
+
+            if (step >= 20) {
+                cb1.setChecked(true);
+            }
+
+            if (step >= 40) {
+                cb2.setChecked(true);
+            }
+
+            if (step >= 60) {
+                cb3.setChecked(true);
+            }
+
+            if (step >= 80) {
+                cb4.setChecked(true);
+            }
+
+            if (step >= 100) {
+                cb5.setChecked(true);
+            }
         });
 
         return view;
