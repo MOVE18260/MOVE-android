@@ -15,12 +15,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.Calendar;
+
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.HomeFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSensor;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
-import dev.ehyeon.move18260_googlemapsandroidapiexample.data.time.Time;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRepository;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,25 +43,6 @@ public class MainActivity extends AppCompatActivity {
         if (!permissionUtil.hasPermissions()) {
             permissionUtil.requestPermissions();
         }
-
-        // TODO 정리
-        // 1. 객체 생성
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTimeInMillis(System.currentTimeMillis());
-//        calendar.set(Calendar.HOUR_OF_DAY, 0);
-//        calendar.set(Calendar.MINUTE, 0);
-//        calendar.set(Calendar.SECOND, 0);
-
-        // 1분마다 업데이트
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-                60 * 1000, pendingIntent);
-
 
         init();
 
@@ -146,13 +128,26 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO INFO dependency injection 라이브러리 필요성 느낌
     private void init() {
-        initTime();
+        initAlarmManager();
         initStep();
         initLocation();
     }
 
-    private void initTime() {
-        Time.getTime();
+    private void initAlarmManager() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void initStep() {
