@@ -43,25 +43,11 @@ public class HomeFragment extends Fragment {
             tvStep.setText("걸음 수 = " + step);
             ivDinosaur.setImageResource((step & 1) == 0 ? R.drawable.dinosaur_1 : R.drawable.dinosaur_2);
 
-            if (step >= 20) {
-                cb1.setChecked(true);
-            }
-
-            if (step >= 40) {
-                cb2.setChecked(true);
-            }
-
-            if (step >= 60) {
-                cb3.setChecked(true);
-            }
-
-            if (step >= 80) {
-                cb4.setChecked(true);
-            }
-
-            if (step >= 100) {
-                cb5.setChecked(true);
-            }
+            cb1.setChecked(step >= 20);
+            cb2.setChecked(step >= 40);
+            cb3.setChecked(step >= 60);
+            cb4.setChecked(step >= 80);
+            cb5.setChecked(step >= 100);
         });
 
         return view;

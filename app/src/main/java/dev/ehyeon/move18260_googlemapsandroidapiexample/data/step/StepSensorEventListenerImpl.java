@@ -25,6 +25,11 @@ public class StepSensorEventListenerImpl implements SensorEventListener {
 
         this.stepMutableLiveData = new MutableLiveData<>(
                 stepSharedPreferences.getInt("step", 0));
+
+        // TODO 나중에 수정
+        SharedPreferences.Editor editor = stepSharedPreferences.edit();
+        editor.putInt("step", 0);
+        editor.apply();
     }
 
     @Override
