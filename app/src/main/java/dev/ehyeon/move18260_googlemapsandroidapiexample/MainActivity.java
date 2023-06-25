@@ -1,6 +1,8 @@
 package dev.ehyeon.move18260_googlemapsandroidapiexample;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
@@ -13,17 +15,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.Calendar;
+
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.HomeFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.MapFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.Fragment.ProfileFragment;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.location.LocationSensor;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.data.step.StepSensor;
-import dev.ehyeon.move18260_googlemapsandroidapiexample.data.time.Time;
 import dev.ehyeon.move18260_googlemapsandroidapiexample.domain.repository.StepRepository;
 
 public class MainActivity extends AppCompatActivity {
 
     private PermissionUtil permissionUtil;
+
+    private StepSensor stepSensor;
 
     private LocationSensor locationSensor;
 
@@ -123,24 +128,46 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO INFO dependency injection 라이브러리 필요성 느낌
     private void init() {
-        initTime();
+        initAlarmManager();
         initStep();
         initLocation();
     }
 
-    private void initTime() {
-        Time.getTime();
+    private void initAlarmManager() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
+                PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
     private void initStep() {
-        StepSensor stepSensor = StepSensor.setStepSensor((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+        stepSensor = StepSensor.setStepSensor(getSharedPreferences("step", MODE_PRIVATE),
+                (SensorManager) getSystemService(Context.SENSOR_SERVICE));
 
-        // TODO 기능 필요
-        StepRepository.setStepRepository(stepSensor, 0);
+        StepRepository.setStepRepository(stepSensor);
+
+        stepSensor.startSensor();
     }
 
     private void initLocation() {
         locationSensor = LocationSensor.setLocationSensor((LocationManager) getSystemService(LOCATION_SERVICE));
         locationSensor.startListening();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        stepSensor.stopSensor();
     }
 }

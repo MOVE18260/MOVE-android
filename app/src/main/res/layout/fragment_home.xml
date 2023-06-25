@@ -1,13 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Fragment.HomeFragment">
 
     <TextView
         android:id="@+id/step"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="걸음 수 = 0"/>
-</FrameLayout>
+        android:text="걸음 수 =" />
+
+    <ImageView
+        android:id="@+id/dinosaur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:src="@drawable/dinosaur_1" />
+
+    <!-- TODO 나중에 2000, 4000, 6000, 8000, 10000 으로 변경 -->
+    <CheckBox
+        android:id="@+id/checkBox_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="20" />
+
+    <CheckBox
+        android:id="@+id/checkBox_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="40" />
+
+    <CheckBox
+        android:id="@+id/checkBox_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="60" />
+
+    <CheckBox
+        android:id="@+id/checkBox_4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="80" />
+
+    <CheckBox
+        android:id="@+id/checkBox_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="100" />
+
+</LinearLayout>
